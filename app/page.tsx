@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 type VideoOption = {
   id: string;
@@ -356,7 +357,7 @@ export default function Home() {
             <p className={`text-xl font-normal max-w-2xl mx-auto mb-8 ${
               isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
             }`}>
-              AI-powered basketball commentary — just pick a clip and we'll narrate your moves like it's Game 7.
+              AI-powered basketball commentary — just pick a clip and we&apos;ll narrate your moves like it&apos;s Game 7.
             </p>
             <p className={`text-sm font-medium ${
               isDarkMode ? 'text-neutral-400' : 'text-neutral-500'
@@ -441,9 +442,11 @@ export default function Home() {
                           : 'border-white hover:border-neutral-300'
                       } ${previewingStyle === style.id ? 'animate-pulse' : ''}`}
                     >
-                      <img
+                      <Image
                         src={style.avatar}
                         alt={style.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                       

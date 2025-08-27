@@ -26,6 +26,10 @@ export async function analyzeVideoDescription(videoId: string): Promise<VideoAna
     throw new Error('Invalid videoId: must be a non-empty string');
   }
 
+  if (!TWELVE_LABS_API_KEY) {
+    throw new Error('TWELVE_LABS_API_KEY environment variable is not set');
+  }
+
   // Make the API request with SSL verification disabled (temporary fix)
   const https = await import('https');
   const agent = new https.Agent({
