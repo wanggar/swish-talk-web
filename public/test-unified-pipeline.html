@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwishTalk - Premium Basketball Commentary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@300;400;500;600;700&family=Helvetica+Neue:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #0C0C0C;
+            --secondary-bg: #141414;
+            --card-bg: #1F1F1F;
+            --accent-red: #E50914;
+            --accent-gold: #FDB827;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B3B3B3;
+            --text-muted: #6B6B6B;
+            --border-subtle: #2F2F2F;
+            --shadow-subtle: rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.4;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 400;
+        }
+        
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        /* Netflix-style Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            padding: 20px 60px;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background: var(--primary-bg);
+        }
+        
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        
+        .brand {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-red);
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-secondary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 800"><rect fill="%23141414" width="1440" height="800"/><circle cx="720" cy="400" r="200" fill="%23FDB827" opacity="0.1"/></svg>');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            margin-top: 0;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            margin-top: 80px;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            padding: 40px 60px 60px;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+        }
+        
+        .section-header {
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid var(--border-subtle);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px var(--shadow-subtle);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-red);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        
+        .feature-card h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .controls-section {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 32px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 40px;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 24px;
+            align-items: end;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+        
+        .input-group input,
+        .input-group select {
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.2);
+        }
+        
+        .input-group select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            background: var(--accent-red);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background: #B20710;
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-primary {
+            background: var(--accent-red);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--card-bg);
+            border-color: var(--text-secondary);
+        }
+        
+        .result-container {
+            margin-top: 24px;
+        }
+        
+        /* Smooth animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 20px;
+            }
+            
+            .hero {
+                padding: 0 20px;
+                height: 60vh;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .video-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+        
+        .loading::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-subtle);
+            border-top: 2px solid var(--accent-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-weight: 400;
+            border: 1px solid;
+        }
+        
+        .alert.success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+        
+        .alert.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .alert.warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+        }
+        
+        .metadata {
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 13px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: var(--text-secondary);
+        }
+        
+
+        
+        .output-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: var(--text-secondary);
+        }
+        
+        .player-section {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 32px;
+            border: 1px solid var(--border-subtle);
+            margin: 40px 0;
+        }
+        
+        .commentary-display {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .commentary-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .commentary-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-red);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .commentary-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .commentary-text {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        .audio-player {
+            margin-top: 24px;
+        }
+        
+        .audio-player audio {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+        
+
+        
+        .video-info {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+        
+        .video-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+        
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+        
+        .video-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px var(--shadow-subtle);
+            border-color: var(--border-subtle);
+        }
+        
+        .video-card.selected {
+            border-color: var(--accent-red);
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(229, 9, 20, 0.3);
+        }
+        
+        .video-preview {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            background: var(--secondary-bg);
+        }
+        
+        .video-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .video-card:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-bg);
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .video-duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .video-details {
+            padding: 16px;
+        }
+        
+        .video-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .video-details p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        
+        .video-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .video-tag {
+            background: var(--accent-gold);
+            color: var(--primary-bg);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .video-card.selected::after {
+            content: "";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-card.selected::before {
+            content: "✓";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="logo">🏀</span>SwishTalk</h1>
+            <p>AI-Powered Basketball Commentary Experience</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <h3>Basketball Highlights</h3>
+                <p>Select a highlight and experience AI commentary magic</p>
+            </div>
+            <div class="section-content">
+                <div class="pipeline-step">
+                    <strong>📹</strong> AI analyzes your basketball highlight
+                </div>
+                <div class="pipeline-step">
+                    <strong>🎯</strong> Generates dynamic commentary in real-time
+                </div>
+                <div class="pipeline-step">
+                    <strong>🎙️</strong> Creates professional audio commentary
+                </div>
+                
+                <div class="input-group">
+                    <label>🔥 Choose Your Basketball Moment</label>
+                    <div class="video-gallery" id="videoGallery">
+                        <div class="video-card" data-video-id="68aac64d88cce82e525f1059" onclick="selectVideo(this)">
+                            <div class="video-preview">
+                                <video preload="metadata" muted>
+                                    <source src="/switch-talk-test-videos/68aac64d88cce82e525f1059.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-icon">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-details">
+                                <h4>Clutch Moments</h4>
+                                <p>Epic basketball highlights</p>
+                            </div>
+                        </div>
+                        
+                        <div class="video-card" data-video-id="68aac7ba35d02f447a6a77f1" onclick="selectVideo(this)">
+                            <div class="video-preview">
+                                <video preload="metadata" muted>
+                                    <source src="/switch-talk-test-videos/68aac7ba35d02f447a6a77f1.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-icon">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-details">
+                                <h4>Slam Dunk Action</h4>
+                                <p>High-flying basketball plays</p>
+                            </div>
+                        </div>
+                        
+                        <div class="video-card" data-video-id="68aac91f88cce82e525f1803" onclick="selectVideo(this)">
+                            <div class="video-preview">
+                                <video preload="metadata" muted>
+                                    <source src="/switch-talk-test-videos/68aac91f88cce82e525f1803.mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-icon">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-details">
+                                <h4>Crossover Kings</h4>
+                                <p>Amazing ball handling skills</p>
+                            </div>
+                        </div>
+                        
+                        <div class="video-card" data-video-id="68ad30cf5a89e2decaa1211e" onclick="selectVideo(this)">
+                            <div class="video-preview">
+                                <video preload="metadata" muted>
+                                    <source src="/switch-talk-test-videos/68ad30cf5a89e2decaa1211e.MOV" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <div class="play-icon">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-details">
+                                <h4>Fast Break Frenzy</h4>
+                                <p>Lightning-fast basketball action</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="videoInfo" class="video-info" style="display: none;"></div>
+                </div>
+                
+
+                        <div class="input-group">
+                            <label>Commentary Style</label>
+                            <select id="commentaryStyle">
+                                <option value="espn-classic">ESPN Classic</option>
+                                <option value="kevin-harlan">Kevin Harlan Style</option>
+                                <option value="shaq">Shaq Style</option>
+                                <option value="nba-hype">NBA Hype</option>
+                                <option value="british-sports">British Commentary</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" id="duration" value="30" min="1" max="300">
+                        </div>
+                        
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="testUnifiedPipeline()">
+                                Generate Commentary
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <div id="pipelineResult" class="result-container"></div>
+        </main>
+    </div>
+
+
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Helper functions for video selection
+        let selectedVideoId = null;
+        
+        function selectVideo(cardElement) {
+            // Remove previous selection
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            cardElement.classList.add('selected');
+            
+            // Store selected video ID
+            selectedVideoId = cardElement.dataset.videoId;
+            
+            // Show video info
+            const videoInfo = document.getElementById('videoInfo');
+            const videoTitle = cardElement.querySelector('h4').textContent;
+            const videoDesc = cardElement.querySelector('p').textContent;
+            videoInfo.innerHTML = `Selected: ${videoTitle} - ${videoDesc}`;
+            videoInfo.style.display = 'block';
+            
+            // Preview video on hover
+            const video = cardElement.querySelector('video');
+            video.currentTime = 2; // Show frame at 2 seconds
+        }
+        
+        // Add video preview on hover
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const video = card.querySelector('video');
+                
+                card.addEventListener('mouseenter', () => {
+                    video.currentTime = 0;
+                    video.play().catch(() => {
+                        // Fallback if autoplay is blocked
+                        video.currentTime = 2;
+                    });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            });
+        });
+        
+
+
+        async function testUnifiedPipeline() {
+            const videoId = selectedVideoId;
+            const duration = document.getElementById('duration').value;
+            const commentaryStyle = document.getElementById('commentaryStyle').value;
+            const resultDiv = document.getElementById('pipelineResult');
+            
+            if (!videoId || !duration) {
+                resultDiv.innerHTML = '<div class="alert error">Please select a highlight and provide duration</div>';
+                return;
+            }
+            
+            const startTime = Date.now();
+            resultDiv.innerHTML = '<div class="loading">Running complete pipeline...</div>';
+            
+            try {
+                let url = `/api/get-commentary-audio?videoId=${encodeURIComponent(videoId)}&duration=${encodeURIComponent(duration)}`;
+                if (commentaryStyle) {
+                    url += `&commentaryStyle=${encodeURIComponent(commentaryStyle)}`;
+                }
+                
+                const response = await fetch(url);
+                const endTime = Date.now();
+                const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+                
+                if (response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('audio')) {
+                        // Success: Got audio file
+                        const audioBlob = await response.blob();
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        
+                        // Extract metadata from headers
+                        const metadata = {
+                            videoId: response.headers.get('X-Video-ID'),
+                            duration: response.headers.get('X-Duration'),
+                            commentaryStyle: response.headers.get('X-Commentary-Style'),
+                            voiceId: response.headers.get('X-Voice-ID'),
+                            commentaryLength: response.headers.get('X-Commentary-Length'),
+                            descriptionLength: response.headers.get('X-Description-Length'),
+                            audioSize: audioBlob.size
+                        };
+                        
+                        // Get commentary from response headers or extract from metadata
+                        const commentary = response.headers.get('X-Commentary') || 'Commentary generated successfully!';
+                        
+                        resultDiv.innerHTML = `
+                            <div class="alert success">Commentary generated successfully!</div>
+                            <div class="player-section">
+                                <div class="commentary-display">
+                                    <div class="commentary-header">
+                                        <div class="commentary-icon">🎤</div>
+                                        <h3 class="commentary-title">AI Commentary</h3>
+                                    </div>
+                                    <div class="commentary-text">${commentary}</div>
+                                </div>
+                                <div class="audio-player">
+                                    <audio controls>
+                                        <source src="${audioUrl}" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                                <div class="metadata">
+                                    Duration: ${metadata.duration}s | Style: ${metadata.commentaryStyle} | Processing: ${totalTime}s
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Fallback: Got JSON response (audio generation failed)
+                        const data = await response.json();
+                        resultDiv.innerHTML = `
+                            <div class="alert warning">Audio generation had issues, but here's your commentary!</div>
+                            <div class="player-section">
+                                <div class="commentary-display">
+                                    <div class="commentary-header">
+                                        <div class="commentary-icon">🎤</div>
+                                        <h3 class="commentary-title">AI Commentary</h3>
+                                    </div>
+                                    <div class="commentary-text">${data.commentary}</div>
+                                </div>
+                                <div class="metadata">
+                                    Processing Time: ${totalTime}s | Note: ${data.message}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Error response
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="alert error">Something went wrong generating your commentary</div>
+                        <div class="alert error">${errorData.error}</div>
+                        <div class="metadata">
+                            Processing Time: ${totalTime}s | Please try selecting a different highlight or adjusting the duration.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                const endTime = Date.now();
+                const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+                resultDiv.innerHTML = `
+                    <div class="alert error">Oops! Something went wrong</div>
+                    <div class="alert error">${error.message}</div>
+                    <div class="metadata">Please check your connection and try again.</div>
+                `;
+            }
+        }
+        
+
+    </script>
+</body>
+</html>

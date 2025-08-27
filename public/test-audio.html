@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Audio Commentary Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        audio {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .endpoint-url {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏀 Basketball Audio Commentary Test</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Direct Text to Speech</h3>
+            <p>Convert basketball commentary text directly to speech:</p>
+            <textarea id="textInput" placeholder="Enter basketball commentary text...">Welcome to tonight's game! The Lakers are taking on the Warriors in what promises to be an incredible matchup. LeBron James brings the ball up court, looking for an opening. He drives to the basket with authority and scores! What a fantastic start to the game!</textarea>
+            <br>
+            <button onclick="testDirectText()">Generate Audio from Text</button>
+            <div id="textResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Description to Commentary to Speech</h3>
+            <p>Generate commentary from a description, then convert to speech:</p>
+            <textarea id="descriptionInput" placeholder="Enter game description...">Basketball game highlights showing LeBron James scoring 30 points against the Warriors. Multiple three-pointers and spectacular dunks throughout the game.</textarea>
+            <br>
+            <label>Duration (seconds): <input type="number" id="durationInput" value="60" min="10" max="300"></label>
+            <br><br>
+            <button onclick="testDescription()">Generate Commentary and Audio</button>
+            <div id="descriptionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Video Analysis to Commentary to Speech</h3>
+            <p>Analyze video and generate commentary with speech:</p>
+            <div class="endpoint-url">GET /api/basketball-audio?videoId=68a52308a48949683bb311b2</div>
+            <button onclick="testVideoAnalysis()">Generate Audio from Video</button>
+            <div id="videoResult"></div>
+            <p><em>Note: This test uses the Twelve Labs API to analyze the video first, then generates commentary, then converts to speech.</em></p>
+        </div>
+
+        <div class="test-section">
+            <h3>Available Endpoints</h3>
+            <p><strong>POST</strong> <code>/api/basketball-audio</code></p>
+            <ul>
+                <li><strong>text</strong>: Direct text to convert to speech</li>
+                <li><strong>description</strong>: Game description to generate commentary from</li>
+                <li><strong>duration</strong>: Optional duration in seconds for pacing</li>
+                <li><strong>voiceId</strong>: Optional voice ID (default: 6XVUA6jZZtcqPTW6amVC)</li>
+            </ul>
+            <p><strong>GET</strong> <code>/api/basketball-audio?videoId=VIDEO_ID</code></p>
+            <ul>
+                <li><strong>videoId</strong>: Twelve Labs video ID for analysis</li>
+                <li><strong>duration</strong>: Optional duration in seconds</li>
+                <li><strong>voiceId</strong>: Optional voice ID</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function testDirectText() {
+            const text = document.getElementById('textInput').value;
+            const resultDiv = document.getElementById('textResult');
+            
+            if (!text.trim()) {
+                resultDiv.innerHTML = '<div class="error">Please enter some text</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="loading">Generating audio...</div>';
+            
+            try {
+                const response = await fetch('/api/basketball-audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    resultDiv.innerHTML = `
+                        <div class="success">Audio generated successfully!</div>
+                        <audio controls>
+                            <source src="${audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    `;
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `<div class="error">Error: ${errorData.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testDescription() {
+            const description = document.getElementById('descriptionInput').value;
+            const duration = document.getElementById('durationInput').value;
+            const resultDiv = document.getElementById('descriptionResult');
+            
+            if (!description.trim()) {
+                resultDiv.innerHTML = '<div class="error">Please enter a description</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="loading">Generating commentary and audio...</div>';
+            
+            try {
+                const response = await fetch('/api/basketball-audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        description: description,
+                        duration: parseInt(duration)
+                    })
+                });
+                
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    resultDiv.innerHTML = `
+                        <div class="success">Commentary and audio generated successfully!</div>
+                        <audio controls>
+                            <source src="${audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    `;
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `<div class="error">Error: ${errorData.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testVideoAnalysis() {
+            const resultDiv = document.getElementById('videoResult');
+            
+            resultDiv.innerHTML = '<div class="loading">Analyzing video and generating audio commentary...</div>';
+            
+            try {
+                const response = await fetch('/api/basketball-audio?videoId=68a52308a48949683bb311b2');
+                
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    resultDiv.innerHTML = `
+                        <div class="success">Video analyzed and audio commentary generated successfully!</div>
+                        <audio controls>
+                            <source src="${audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    `;
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `<div class="error">Error: ${errorData.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
