@@ -40,9 +40,21 @@ const videos: VideoOption[] = [
   },
   {
     id: '68ad30cf5a89e2decaa1211e',
-    filename: '68ad30cf5a89e2decaa1211e.MOV',
+    filename: '68ad30cf5a89e2decaa1211e.mp4',
     title: 'Fast Break Frenzy',
     description: 'Lightning speed transitions'
+  },
+  {
+    id: '68afee5ca52deb36571a1bb8',
+    filename: '68afee5ca52deb36571a1bb8.mp4',
+    title: 'Court Vision Showcase',
+    description: 'Basketball IQ in action'
+  },
+  {
+    id: '68afee5e5a89e2decaa2692c',
+    filename: '68afee5e5a89e2decaa2692c.mp4',
+    title: 'Crossover Clinic',
+    description: 'Handles that break ankles'
   }
 ];
 
@@ -208,7 +220,7 @@ export default function Home() {
             onClick={() => setIsDarkMode(!isDarkMode)}
             className={`p-3 rounded-full transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-neutral-800 hover:bg-neutral-700 text-yellow-400' 
+                ? 'bg-neutral-800 hover:bg-neutral-700 text-white' 
                 : 'bg-white hover:bg-neutral-100 text-neutral-900 shadow-lg'
             }`}
           >
@@ -219,7 +231,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6 py-16">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-mono lowercase tracking-wider text-red-600">
+            <h1 className="text-2xl font-mono lowercase tracking-wider text-blue-600">
               swishtalk
             </h1>
           </div>
@@ -229,10 +241,10 @@ export default function Home() {
             <div className="relative rounded-xl overflow-hidden bg-neutral-900" style={{ height: '400px' }}>
               <video 
                 controls 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 poster=""
               >
-                <source src={result.videoUrl} type="video/mp4" />
+                <source src={result.videoUrl} type={result.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'} />
                 Your browser does not support the video tag.
               </video>
               
@@ -277,7 +289,7 @@ export default function Home() {
                   
                   {/* Download/Share buttons */}
                   <div className="flex gap-3 mt-4">
-                    <button className="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
                       Download
                     </button>
                     <button className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
@@ -295,7 +307,7 @@ export default function Home() {
               <div className="text-center">
                 <button 
                   onClick={handleReset}
-                  className="text-red-600 hover:text-red-700 font-medium transition-colors"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                 >
                   🔥 Make Another Highlight
                 </button>
@@ -315,7 +327,7 @@ export default function Home() {
           onClick={() => setIsDarkMode(!isDarkMode)}
           className={`p-3 rounded-full transition-all duration-300 ${
             isDarkMode 
-              ? 'bg-neutral-800 hover:bg-neutral-700 text-yellow-400' 
+              ? 'bg-neutral-800 hover:bg-neutral-700 text-white' 
               : 'bg-white hover:bg-neutral-100 text-neutral-900 shadow-lg'
           }`}
         >
@@ -343,12 +355,12 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-24 text-center">
           <div className="mb-6">
-            <h1 className="text-2xl font-mono lowercase tracking-wider text-red-600 mb-8">
+            <h1 className="text-2xl font-mono lowercase tracking-wider text-blue-600 mb-8">
               swishtalk
             </h1>
             <h2 className="text-5xl lg:text-7xl font-bold leading-tight mb-6">
               Turn Any Game Into{' '}
-              <span className="bg-gradient-to-r from-red-600 to-yellow-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-black via-blue-600 to-black bg-clip-text text-transparent">
                 Prime-Time Highlights
               </span>
             </h2>
@@ -382,17 +394,17 @@ export default function Home() {
                 onClick={() => setSelectedVideo(video.id)}
                 className={`group cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                   selectedVideo === video.id
-                    ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-transparent'
+                    ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-transparent'
                     : ''
                 }`}
               >
                 <div className="relative h-48 rounded-xl overflow-hidden bg-neutral-900 mb-3">
                   <video
                     muted
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-black"
                     poster=""
                   >
-                    <source src={`/switch-talk-test-videos/${video.filename}`} type="video/mp4" />
+                    <source src={`/switch-talk-test-videos/${video.filename}`} type={video.filename.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'} />
                   </video>
                   
                   {/* Hover overlay */}
@@ -404,7 +416,7 @@ export default function Home() {
                   
                   {/* Selected indicator */}
                   {selectedVideo === video.id && (
-                    <div className="absolute top-3 right-3 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                    <div className="absolute top-3 right-3 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                       <span className="text-white text-xs">✓</span>
                     </div>
                   )}
@@ -436,7 +448,7 @@ export default function Home() {
                       onClick={() => handleStylePreview(style.id)}
                       className={`relative w-20 h-20 rounded-full overflow-hidden border-4 transition-all duration-300 transform hover:scale-105 ${
                         selectedStyle === style.id
-                          ? 'border-blue-500 ring-4 ring-blue-500/30'
+                          ? 'border-blue-600 ring-4 ring-blue-600/30'
                           : 'border-white hover:border-neutral-300'
                       } ${previewingStyle === style.id ? 'animate-pulse' : ''}`}
                     >
@@ -464,7 +476,7 @@ export default function Home() {
                     
                     {/* Selection Ring */}
                     {selectedStyle === style.id && (
-                      <div className="absolute -inset-1 rounded-full border-4 border-blue-500 animate-pulse"></div>
+                      <div className="absolute -inset-1 rounded-full border-4 border-blue-600 animate-pulse"></div>
                     )}
                   </div>
                   
@@ -475,7 +487,7 @@ export default function Home() {
                       onClick={() => setSelectedStyle(style.id)}
                       className={`px-4 py-1.5 text-xs rounded-full transition-all duration-200 ${
                         selectedStyle === style.id
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-blue-600 text-white'
                           : isDarkMode
                             ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
                             : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
@@ -513,25 +525,99 @@ export default function Home() {
             How long should your highlight be?
           </p>
           
-          <div className="max-w-32">
-            <div className="relative">
-              <input
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                min="1"
-                max="300"
-                className={`w-full px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-300 ${
-                  isDarkMode
-                    ? 'bg-neutral-900 border-neutral-800 text-white focus:border-red-600'
-                    : 'bg-white border-neutral-200 text-neutral-900 focus:border-red-600'
-                } focus:outline-none focus:ring-2 focus:ring-red-600/20`}
-              />
-              <span className={`absolute right-2 top-1/2 transform -translate-y-1/2 text-xs ${
-                isDarkMode ? 'text-neutral-400' : 'text-neutral-600'
-              }`}>
-                s
-              </span>
+          <div className="max-w-xs">
+            {/* Duration Slider with Number Input */}
+            <div className="space-y-4">
+              {/* Display Current Value */}
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-semibold">{duration} seconds</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setDuration(15)}
+                    className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                      duration === 15
+                        ? 'bg-blue-600 text-white'
+                        : isDarkMode
+                          ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
+                  >
+                    15s
+                  </button>
+                  <button
+                    onClick={() => setDuration(30)}
+                    className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                      duration === 30
+                        ? 'bg-blue-600 text-white'
+                        : isDarkMode
+                          ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
+                  >
+                    30s
+                  </button>
+                  <button
+                    onClick={() => setDuration(60)}
+                    className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                      duration === 60
+                        ? 'bg-blue-600 text-white'
+                        : isDarkMode
+                          ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
+                  >
+                    60s
+                  </button>
+                </div>
+              </div>
+              
+              {/* Range Slider */}
+              <div className="relative">
+                <input
+                  type="range"
+                  min="5"
+                  max="180"
+                  step="5"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, #2563eb 0%, #2563eb ${((duration - 5) / (180 - 5)) * 100}%, ${isDarkMode ? '#404040' : '#e5e5e5'} ${((duration - 5) / (180 - 5)) * 100}%, ${isDarkMode ? '#404040' : '#e5e5e5'} 100%)`
+                  }}
+                />
+              </div>
+              
+              {/* Min/Max Labels */}
+              <div className="flex justify-between text-xs text-neutral-500">
+                <span>5s</span>
+                <span>3min</span>
+              </div>
+              
+              {/* Custom Input */}
+              <div className="relative max-w-24">
+                <input
+                  type="number"
+                  value={duration}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    if (val >= 5 && val <= 180) {
+                      setDuration(val);
+                    }
+                  }}
+                  min="5"
+                  max="180"
+                  className={`w-full px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-300 ${
+                    isDarkMode
+                      ? 'bg-neutral-900 border-neutral-800 text-white focus:border-blue-600'
+                      : 'bg-white border-neutral-200 text-neutral-900 focus:border-blue-600'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-600/20`}
+                />
+                <span className={`absolute right-2 top-1/2 transform -translate-y-1/2 text-xs ${
+                  isDarkMode ? 'text-neutral-400' : 'text-neutral-600'
+                }`}>
+                  s
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -556,7 +642,7 @@ export default function Home() {
                   isDarkMode ? 'bg-neutral-800' : 'bg-neutral-200'
                 } overflow-hidden`}>
                   <div 
-                    className="h-full bg-gradient-to-r from-red-600 to-yellow-500 transition-all duration-500 ease-out"
+                    className="h-full bg-gradient-to-r from-black via-blue-600 to-blue-800 transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                   ></div>
                 </div>
@@ -572,7 +658,7 @@ export default function Home() {
                   ? isDarkMode
                     ? 'bg-neutral-800 text-neutral-600 cursor-not-allowed'
                     : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-red-600 to-yellow-500 hover:from-red-700 hover:to-yellow-600 text-white transform hover:scale-105 shadow-lg hover:shadow-xl'
+                  : 'bg-gradient-to-r from-black via-blue-600 to-blue-800 hover:from-neutral-900 hover:via-blue-700 hover:to-blue-900 text-white transform hover:scale-105 shadow-lg hover:shadow-xl'
               }`}
             >
               🔥 Generate My Commentary
