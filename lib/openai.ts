@@ -5,6 +5,90 @@ const openai = new OpenAI({
 });
 
 /**
+ * Ensures commentary ends with complete sentences and is appropriately sized
+ * 
+ * @param rawCommentary - The raw commentary from OpenAI
+ * @param targetWords - Target word count for the commentary
+ * @returns Cleaned commentary with complete sentences
+ */
+function ensureCompleteCommentary(rawCommentary: string, targetWords: number): string {
+  // Clean up the commentary by removing any incomplete trailing text
+  let commentary = rawCommentary.trim();
+  
+  // Split into sentences - look for sentence endings
+  const sentenceEnders = /[.!?]+/g;
+  const sentences: string[] = [];
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = sentenceEnders.exec(commentary)) !== null) {
+    const sentence = commentary.substring(lastIndex, match.index + match[0].length).trim();
+    if (sentence.length > 0) {
+      sentences.push(sentence);
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  
+  // If there's remaining text after the last sentence, check if it looks complete
+  const remainingText = commentary.substring(lastIndex).trim();
+  if (remainingText.length > 0) {
+    // Only add remaining text if it seems like a complete thought
+    // (has reasonable length and doesn't end abruptly)
+    if (remainingText.length > 10 && (
+      remainingText.endsWith('.') || 
+      remainingText.endsWith('!') || 
+      remainingText.endsWith('?') ||
+      // Check if it looks like a complete clause (basic heuristic)
+      remainingText.includes(' and ') || 
+      remainingText.includes(' with ') ||
+      remainingText.includes(' as ')
+    )) {
+      sentences.push(remainingText);
+    }
+  }
+  
+  if (sentences.length === 0) {
+    // Fallback: if no sentences found, return the original but ensure it ends properly
+    if (!commentary.match(/[.!?]$/)) {
+      commentary += '.';
+    }
+    return commentary;
+  }
+  
+  // Calculate word counts for each sentence
+  const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
+  const totalWords = sentenceWordCounts.reduce((sum, count) => sum + count, 0);
+  
+  // If we're already close to target or under, return all complete sentences
+  if (totalWords <= targetWords * 1.2) { // 20% tolerance
+    return sentences.join(' ');
+  }
+  
+  // If we have too many words, find the best subset of sentences
+  let cumulativeWords = 0;
+  let selectedSentences: string[] = [];
+  
+  for (let i = 0; i < sentences.length; i++) {
+    const sentenceWords = sentenceWordCounts[i];
+    
+    // If adding this sentence would exceed target by more than 30%, stop here
+    if (cumulativeWords + sentenceWords > targetWords * 1.3) {
+      break;
+    }
+    
+    selectedSentences.push(sentences[i]);
+    cumulativeWords += sentenceWords;
+  }
+  
+  // Ensure we have at least one sentence
+  if (selectedSentences.length === 0 && sentences.length > 0) {
+    selectedSentences = [sentences[0]];
+  }
+  
+  return selectedSentences.join(' ');
+}
+
+/**
  * Converts a video description into ESPN-style basketball commentary
  * 
  * @param videoDescription - The description of the basketball video to commentate on
@@ -47,48 +131,53 @@ Transform the following video description into captivating ESPN-style basketball
 
 ${durationGuidance}
 
+IMPORTANT: Provide only the commentary text without quotes or any formatting. End with complete sentences only.
+
 Video Description: "${videoDescription}"
 
 Commentary:`;
 
-    // Calculate max tokens based on realistic speech duration
-    // Rule of thumb: ~1.3 tokens per word, so tokens = words * 1.3
-    const getMaxTokens = (seconds?: number): number => {
-      if (!seconds) return 50; // Default ~40 words
-      
-      const wordsNeeded = Math.round(seconds * 2.5); // 2.5 words per second
-      const tokensNeeded = Math.round(wordsNeeded * 1.3); // 1.3 tokens per word
-      
-      // Add small buffer for natural speech flow
-      return Math.min(tokensNeeded + 10, 200); // Cap at 200 tokens max
+    // Calculate target words based on realistic speech duration
+    // Average speaking rate: 150-200 words per minute (2.5-3.3 words per second)
+    const getTargetWords = (seconds?: number): number => {
+      if (!seconds) return 40; // Default ~40 words
+      return Math.round(seconds * 2.5); // 2.5 words per second
     };
 
-    const maxTokens = getMaxTokens(durationSeconds);
-    console.log(`📝 Max tokens set to: ${maxTokens} for ${durationSeconds || 'unspecified'} second(s) (≈${durationSeconds ? Math.round(durationSeconds * 2.5) : 40} words)`);
+    const targetWords = getTargetWords(durationSeconds);
+    
+    // Use a generous token limit to avoid cutoffs, then trim to complete sentences
+    // GPT-4 typically uses ~1.3 tokens per word, so we'll use a 2x buffer for safety
+    const generousTokenLimit = Math.max(targetWords * 3, 150); // At least 150 tokens, usually much more
+    console.log(`📝 Target words: ${targetWords} for ${durationSeconds || 'unspecified'} second(s), using generous token limit: ${generousTokenLimit}`);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are an expert ESPN basketball commentator known for your exciting, knowledgeable, and dramatic commentary style. You bring basketball games to life with your words."
+          content: "You are an expert ESPN basketball commentator known for your exciting, knowledgeable, and dramatic commentary style. You bring basketball games to life with your words. Always complete your sentences and thoughts naturally."
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      max_tokens: maxTokens,
+      max_tokens: generousTokenLimit,
       temperature: 0.8, // Higher temperature for more creative and varied commentary
     });
 
-    const commentary = completion.choices[0]?.message?.content;
+    let commentary = completion.choices[0]?.message?.content;
     
     if (!commentary) {
       throw new Error('No commentary generated from OpenAI');
     }
 
+    // Post-process to ensure complete sentences and appropriate length
+    commentary = ensureCompleteCommentary(commentary, targetWords);
+
     console.log('✅ Basketball commentary generated successfully');
+    console.log(`📊 Final commentary: ${commentary.split(' ').length} words (target: ${targetWords})`);
     return commentary;
 
   } catch (error) {
