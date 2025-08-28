@@ -333,12 +333,12 @@ export default function Home() {
             autoPlay
             loop
             muted
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover opacity-40"
           >
             <source src="/switch-talk-test-videos/68aac64d88cce82e525f1059.mp4" type="video/mp4" />
           </video>
           <div className={`absolute inset-0 ${
-            isDarkMode ? 'bg-neutral-950/80' : 'bg-neutral-50/80'
+            isDarkMode ? 'bg-neutral-950/60' : 'bg-neutral-50/60'
           }`}></div>
         </div>
 
