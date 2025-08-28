@@ -155,6 +155,7 @@ export async function GET(request: NextRequest) {
         'X-Duration': durationSeconds.toString(),
         'X-Commentary-Style': selectedStyle,
         'X-Voice-ID': voiceId,
+        'X-Commentary': commentary,
         'X-Commentary-Length': commentary.length.toString(),
         'X-Description-Length': analysisResult.text.length.toString(),
       },

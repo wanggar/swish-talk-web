@@ -128,30 +128,28 @@ export default function Home() {
       clearInterval(progressInterval);
       setProgress(100);
       
-      setTimeout(() => {
+      setTimeout(async () => {
         if (response.ok) {
           const contentType = response.headers.get('content-type');
           
           if (contentType && contentType.includes('audio')) {
-            const audioBlob = response.blob();
-            audioBlob.then(blob => {
-              const audioUrl = URL.createObjectURL(blob);
-              const commentary = response.headers.get('X-Commentary') || 'Your highlight just got the prime-time treatment!';
-              const selectedVideoData = videos.find(v => v.id === selectedVideo);
-              
-              setResult({
-                commentary,
-                audioUrl,
-                videoUrl: `/switch-talk-test-videos/${selectedVideoData?.filename}`
-              });
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            // Try to get commentary from headers, fallback to default
+            const commentary = response.headers.get('X-Commentary') || 'Your highlight just got the prime-time treatment!';
+            const selectedVideoData = videos.find(v => v.id === selectedVideo);
+            
+            setResult({
+              commentary,
+              audioUrl,
+              videoUrl: `/switch-talk-test-videos/${selectedVideoData?.filename}`
             });
           } else {
-            response.json().then(data => {
-              setResult({
-                commentary: data.commentary,
-                audioUrl: '',
-                videoUrl: `/switch-talk-test-videos/${videos.find(v => v.id === selectedVideo)?.filename}`
-              });
+            const data = await response.json();
+            setResult({
+              commentary: data.commentary || 'Your highlight just got the prime-time treatment!',
+              audioUrl: '',
+              videoUrl: `/switch-talk-test-videos/${videos.find(v => v.id === selectedVideo)?.filename}`
             });
           }
         }
@@ -222,16 +220,16 @@ export default function Home() {
           {/* Logo */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-mono lowercase tracking-wider text-red-600">
-              hoopcaster
+              swishtalk
             </h1>
           </div>
 
           {/* Video Player */}
           <div className="mb-8">
-            <div className="relative rounded-xl overflow-hidden bg-neutral-900">
+            <div className="relative rounded-xl overflow-hidden bg-neutral-900" style={{ height: '400px' }}>
               <video 
                 controls 
-                className="w-full"
+                className="w-full h-full object-cover"
                 poster=""
               >
                 <source src={result.videoUrl} type="video/mp4" />
@@ -260,7 +258,7 @@ export default function Home() {
                 <p className={`text-sm leading-relaxed font-mono ${
                   isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
                 }`}>
-                  {result.commentary}
+                  {result.commentary || 'Your highlight just got the prime-time treatment!'}
                 </p>
               </div>
             </div>
@@ -346,7 +344,7 @@ export default function Home() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-24 text-center">
           <div className="mb-6">
             <h1 className="text-2xl font-mono lowercase tracking-wider text-red-600 mb-8">
-              hoopcaster
+              swishtalk
             </h1>
             <h2 className="text-5xl lg:text-7xl font-bold leading-tight mb-6">
               Turn Any Game Into{' '}
@@ -388,7 +386,7 @@ export default function Home() {
                     : ''
                 }`}
               >
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-neutral-900 mb-3">
+                <div className="relative h-48 rounded-xl overflow-hidden bg-neutral-900 mb-3">
                   <video
                     muted
                     className="w-full h-full object-cover"
