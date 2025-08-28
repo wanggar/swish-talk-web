@@ -150,12 +150,12 @@ export async function GET(request: NextRequest) {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
-        // Custom headers for pipeline info
+        // Custom headers for pipeline info (sanitized for HTTP headers)
         'X-Video-ID': videoId,
         'X-Duration': durationSeconds.toString(),
         'X-Commentary-Style': selectedStyle,
         'X-Voice-ID': voiceId,
-        'X-Commentary': commentary,
+        'X-Commentary': encodeURIComponent(commentary), // URL encode to handle special characters
         'X-Commentary-Length': commentary.length.toString(),
         'X-Description-Length': analysisResult.text.length.toString(),
       },

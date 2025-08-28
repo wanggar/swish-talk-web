@@ -106,6 +106,8 @@ export default function Home() {
     videoUrl: string;
   } | null>(null);
   const [previewingStyle, setPreviewingStyle] = useState<string | null>(null);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
+  const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
 
   // Theme toggle
   useEffect(() => {
@@ -148,7 +150,8 @@ export default function Home() {
             const audioBlob = await response.blob();
             const audioUrl = URL.createObjectURL(audioBlob);
             // Try to get commentary from headers, fallback to default
-            const commentary = response.headers.get('X-Commentary') || 'Your highlight just got the prime-time treatment!';
+            const rawCommentary = response.headers.get('X-Commentary');
+            const commentary = rawCommentary ? decodeURIComponent(rawCommentary) : 'Your highlight just got the prime-time treatment!';
             const selectedVideoData = videos.find(v => v.id === selectedVideo);
             
             setResult({
@@ -267,11 +270,22 @@ export default function Home() {
             } border ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
               <h3 className="text-lg font-semibold mb-4">Live Commentary</h3>
               <div className="max-h-64 overflow-y-auto">
-                <p className={`text-sm leading-relaxed font-mono ${
+                <div className={`text-sm leading-relaxed font-mono ${
                   isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
                 }`}>
-                  {result.commentary || 'Your highlight just got the prime-time treatment!'}
-                </p>
+                  {(result.commentary || 'Your highlight just got the prime-time treatment!').split(' ').map((word, index) => (
+                    <span
+                      key={index}
+                      className={`transition-all duration-200 ${
+                        index <= currentWordIndex 
+                          ? 'bg-blue-600 text-white px-1 rounded' 
+                          : ''
+                      }`}
+                    >
+                      {word}{' '}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -282,7 +296,32 @@ export default function Home() {
                   isDarkMode ? 'bg-neutral-900' : 'bg-white'
                 } border ${isDarkMode ? 'border-neutral-800' : 'border-neutral-200'}`}>
                   <h3 className="text-lg font-semibold mb-4">Voice Track</h3>
-                  <audio controls className="w-full">
+                  <audio 
+                    controls 
+                    className="w-full"
+                    ref={(audio) => {
+                      if (audio && !audioRef) {
+                        setAudioRef(audio);
+                        
+                        // Simple hack: highlight words based on audio progress
+                        const updateHighlight = () => {
+                          if (audio.duration && result.commentary) {
+                            const progress = audio.currentTime / audio.duration;
+                            const totalWords = result.commentary.split(' ').length;
+                            const newWordIndex = Math.floor(progress * totalWords);
+                            setCurrentWordIndex(newWordIndex);
+                          }
+                        };
+                        
+                        audio.addEventListener('timeupdate', updateHighlight);
+                        audio.addEventListener('ended', () => setCurrentWordIndex(-1));
+                        audio.addEventListener('pause', () => {
+                          // Keep current highlight when paused
+                        });
+                        audio.addEventListener('play', updateHighlight);
+                      }
+                    }}
+                  >
                     <source src={result.audioUrl} type="audio/mpeg" />
                     Your browser does not support the audio element.
                   </audio>
